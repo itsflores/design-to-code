@@ -10,10 +10,18 @@ const options = {
     }
 }
 
-const generateColors = (colorFrames) => {
+const getColors = (colorFrames) => {
     colorFrames.forEach((frame) => {
         designSystem[frame.name] = `color: ${frame.children[0].characters}`;
     });
+}
+
+const getFonts = (typeFrames) => {
+    typeFrames.forEach((frame) => {
+        if (frame.type === 'FRAME') {
+            console.log(frame.name);
+        }
+    })
 }
 
 const figmaAPIRequest = async() => {
@@ -31,8 +39,14 @@ const generateClasses = (designObj) => {
         if (designObj[frame].type === 'FRAME') {
             // ?Gets colors from 
             if (designObj[frame].name === 'colors') {
-                generateColors(designObj[frame].children);
+                getColors(designObj[frame].children);
             }
+
+            if (designObj[frame].name === 'type') {
+                getFonts(designObj[frame].children);
+            }
+
+            // console.log(designObj[frame].children);
         }
     })
 }

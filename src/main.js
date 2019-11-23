@@ -8,7 +8,12 @@ const designSystem = {
     classes: [],
     elements: [],
     colors: [],
+    rem: null,
 };
+
+const elements = [
+    'ul',
+]
 
 const objTostyle = {
     fontFamily: 'font-family',
@@ -43,6 +48,10 @@ const getFonts = async(typeFrames) => {
         if (frame.type === 'FRAME') {
             element = frame.name.substring(0, frame.name.indexOf(':'))
             color = frame.name.substring(frame.name.indexOf(':') + 1, frame.name.length);
+
+            if (element === 'body') {
+                designSystem.rem = frame.children[0].style.fontSize
+            }
 
             await Promise.all(Object.keys(frame.children[0].style).map(async(item) => {
                 if (item === 'fontFamily') {
@@ -108,9 +117,20 @@ const generateClasses = async(designObj) => {
             if (designObj[frame].name === 'type') {
                 await getFonts(designObj[frame].children);
             }
+        }
+    }))
 
-            if (designObj[frame].name === 'header-margin') {
-                console.log(designObj[frame].children);
+    await Promise.all(Object.keys(designObj).map(async (frame) => {
+        if (designObj[frame].type === 'FRAME') {
+            // ?Finds all the other div styling
+            if (designObj[frame].name !== 'type' && designObj[frame].name !== 'colors') {
+                console.log(designObj[frame].name);
+                designObj[frame].children.forEach((item) => {
+                    if (item.type === 'FRAME') {
+                        console.log(`${item.name}: ${item.absoluteBoundingBox.height / designSystem.rem}rem`);
+                    }
+                })
+                console.log('')
             }
         }
     }))
@@ -119,5 +139,5 @@ const generateClasses = async(designObj) => {
 (async() => {
     const figmaObj = await figmaAPIRequest();
     await generateClasses(figmaObj.document.children[0].children[0].children);
-    console.log(designSystem);
+    // console.log(designSystem);
 })();

@@ -1,0 +1,105 @@
+<h2 id="h2">CSS Exporter</h2>
+<button id="create">Create Selected</button>
+<button id="createAll">Create All</button>
+<button id="cancel">Cancel</button>
+<button id="download">Download</button>
+<style>
+    div {
+        height: 500px;
+    }
+    
+    body {
+        font-family: 'Trebuchet MS';
+        background: linear-gradient(12deg, rgba(107, 70, 63, 1) 0%, rgba(89, 61, 64, 1) 28%, rgba(77, 54, 64, 1) 47%, rgba(74, 55, 69, 1) 66%, rgba(64, 57, 75, 1) 80%, rgba(43, 43, 59, 1) 100%);
+        text-align: center;
+    }
+    
+    #h2 {
+        font-family: 'Trebuchet MS';
+        color: whitesmoke;
+    }
+    
+    #create,
+    #createAll,
+    #cancel,
+    #download {
+        display: block;
+        padding: 7px;
+        font-family: 'Trebuchet MS';
+        color: whitesmoke;
+        background-color: 444444;
+        border: none;
+        display: inline-block;
+        height: 30px;
+        width: 150px;
+        margin-bottom: 10px;
+        border-radius: 3px;
+    }
+    
+    #download {
+        visibility: hidden;
+        height: 0px;
+        margin-bottom: 0px;
+    }
+    
+    #create:hover,
+    #createAll:hover,
+    #cancel:hover,
+    #download:hover {
+        background-color: 555555;
+        box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3), 0 8px 30px 0 rgba(0, 0, 0, 0.2);
+    }
+</style>
+<script>
+    document.getElementById('create').onclick = () => {
+        parent.postMessage({
+            pluginMessage: {
+                type: 'create-selected'
+            }
+        }, '*')
+        create.style.visibility = 'hidden';
+        create.style.height = '-30px';
+        create.style.marginBottom = '0px';
+        createAll.style.visibility = 'hidden';
+        createAll.style.height = '0px';
+        createAll.style.marginBottom = '0px';
+        cancel.style.visibility = 'hidden';
+        cancel.style.height = '0px';
+        cancel.style.marginBottom = '0px';
+        download.style.visibility = 'visible';
+        download.style.height = '30px';
+    }
+    document.getElementById('createAll').onclick = () => {
+        parent.postMessage({
+            pluginMessage: {
+                type: 'create-all'
+            }
+        }, '*')
+        create.style.visibility = 'hidden';
+        create.style.height = '0px';
+        create.style.marginBottom = '0px';
+        createAll.style.visibility = 'hidden';
+        createAll.style.height = '0px';
+        createAll.style.marginBottom = '0px';
+        cancel.style.visibility = 'hidden';
+        cancel.style.height = '0px';
+        cancel.style.marginBottom = '0px';
+        down.style.visibility = 'visible';
+        down.style.height = '30px';
+    }
+
+    document.getElementById('cancel').onclick = () => {
+        parent.postMessage({
+            pluginMessage: {
+                type: 'cancel'
+            }
+        }, '*')
+    }
+    document.getElementById('download').onclick = () => {
+        parent.postMessage({
+            pluginMessage: {
+                type: 'download'
+            }
+        }, '*')
+    }
+</script>

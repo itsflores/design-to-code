@@ -4,23 +4,28 @@ const request = require('request');
 const fetch = require('node-fetch');
 
 const options = {
-  headers: {
-    'X-Figma-Token': `${ACCESS_TOKEN}`
-  }
+    headers: {
+        'X-Figma-Token': `${ACCESS_TOKEN}`
+    }
 };
 
 const figmaAPIRequest = async() => {
-  const res = await fetch( `${FIGMA_API_URL}/files/jZE8coiDiHCIRoF0mndbkp`, options, async(error, response, body) => {
-    const object = JSON.parse(body);
-    return Promise.resolve(object);
-  });
- 
-  const figmaRes = await res.json();
-  return Promise.resolve(figmaRes);
+    const res = await fetch(`${FIGMA_API_URL}/files/jZE8coiDiHCIRoF0mndbkp`, options, async(error, response, body) => {
+        const object = JSON.parse(body);
+        return Promise.resolve(object);
+    });
+
+    const figmaRes = await res.json();
+    return Promise.resolve(figmaRes);
+}
+
+const whatever = (figma) => {
+    console.log(figma);
 }
 
 (async() => {
-  const figmaObj = await figmaAPIRequest();
-  // console.log('connection : %j', figmaObj);
-  console.log(figmaObj.document.children);
+    const figmaObj = await figmaAPIRequest();
+    // console.log('connection : %j', figmaObj);
+    console.log(figmaObj.document.children);
+    whatever(figmaObj.document.children);
 })();

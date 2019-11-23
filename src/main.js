@@ -124,13 +124,31 @@ const generateClasses = async(designObj) => {
         if (designObj[frame].type === 'FRAME') {
             // ?Finds all the other div styling
             if (designObj[frame].name !== 'type' && designObj[frame].name !== 'colors') {
-                console.log(designObj[frame].name);
+                const newObj = {
+                    name: '',
+                    style: []
+                }
+                newObj.name = `${designObj[frame].name}`;
+                let name = '';
+
                 designObj[frame].children.forEach((item) => {
                     if (item.type === 'FRAME') {
-                        console.log(`${item.name}: ${item.absoluteBoundingBox.height / designSystem.rem}rem`);
+                        if (name !== item.name) {
+                            newObj.style.push({
+                                [`${item.name}`]: `${item.absoluteBoundingBox.height / designSystem.rem}rem`
+                            })
+                        }
+                        name = item.name;
                     }
                 })
-                console.log('')
+
+                // console.log(newObj);
+
+                designSystem.classes.push({
+                    [newObj.name]: {
+                        ...newObj.style
+                    }
+                });
             }
         }
     }))
@@ -139,5 +157,5 @@ const generateClasses = async(designObj) => {
 (async() => {
     const figmaObj = await figmaAPIRequest();
     await generateClasses(figmaObj.document.children[0].children[0].children);
-    // console.log(designSystem);
+    console.log(designSystem);
 })();

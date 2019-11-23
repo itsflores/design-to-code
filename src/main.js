@@ -73,12 +73,11 @@ const getFonts = async(typeFrames) => {
             // console.log(googleFontImport);
         }
     }))
-
-    console.log(designSystem);
 }
 
 const googleFontsAPIRequest = async(font) => {
     font = font.replace(' ', '+');
+
     const res = await fetch(`${GOOGLE_FONTS_API_URL}/css?family=${font}`, async(error, response, body) => {
         return Promise.resolve(body);
     });
@@ -97,24 +96,28 @@ const figmaAPIRequest = async() => {
     return Promise.resolve(figmaRes);
 }
 
-const generateClasses = (designObj) => {
-    Object.keys(designObj).forEach((frame) => {
+const generateClasses = async(designObj) => {
+    await Promise.all(Object.keys(designObj).map(async (frame) => {
         if (designObj[frame].type === 'FRAME') {
-            // ?Gets colors from 
+            // ?Gets colors 
             if (designObj[frame].name === 'colors') {
                 getColors(designObj[frame].children);
             }
 
+            // ?Gets all fonts and types
             if (designObj[frame].name === 'type') {
-                getFonts(designObj[frame].children);
+                await getFonts(designObj[frame].children);
             }
 
-            // console.log(designObj[frame].children);
+            if (designObj[frame].name === 'header-margin') {
+                console.log(designObj[frame].children);
+            }
         }
-    })
+    }))
 }
 
 (async() => {
     const figmaObj = await figmaAPIRequest();
-    generateClasses(figmaObj.document.children[0].children[1].children);
+    await generateClasses(figmaObj.document.children[0].children[0].children);
+    console.log(designSystem);
 })();

@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node ./src/main.js"
   },
   "repository": {
     "type": "git",
@@ -15,5 +16,9 @@
   "bugs": {
     "url": "https://github.com/OmarG247/design-to-code/issues"
   },
-  "homepage": "https://github.com/OmarG247/design-to-code#readme"
+  "homepage": "https://github.com/OmarG247/design-to-code#readme",
+  "dependencies": {
+    "node-fetch": "^2.6.0",
+    "request": "^2.88.0"
+  }
 }

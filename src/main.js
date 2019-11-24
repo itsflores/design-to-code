@@ -9,7 +9,7 @@ const designSystem = {
     elements: [],
     colors: [],
     buttons: [],
-    rem: null,
+    remUnit: null,
 };
 
 const elements = [
@@ -22,6 +22,7 @@ const objTostyle = {
     fontSize: 'font-size',
     textAlignHorizontal: 'text-align',
     textAlignVertical: 'text-align-vertical',
+    dropShadow: 'box-shadow'
 }
 
 const options = {
@@ -32,22 +33,38 @@ const options = {
 
 const getButtons = (buttonFrames) => {
     buttonFrames.forEach((button) => {
-        const className = button.name;
+        let currButton = {
+            name: null,
+            fill: null,
+            strokeWeight: null,
+            borderRadius: null,
+            padding: null,
+            textColor: null,
+        };
         
         button.children.forEach((item) => {
             if (item.type === 'RECTANGLE') {
-                console.log(item.fills);
-                console.log(item.strokes);
-                console.log(item.strokeWeight);
-                console.log(item.effects);
-                console.log(item.cornerRadius);
+                currButton.fill = item.fills[0].color;
+                if (item.strokes.length > 0) {
+                    currButton['stroke'] = item.strokes[0].color
+                }
+                currButton.strokeWeight = item.strokeWeight;
+                currButton.borderRadius = `${item.cornerRadius / designSystem.remUnit}rem`;
             }
             if (item.type === 'FRAME') {
-                console.log(item.name)
-                console.log(item.absoluteBoundingBox.height)
+                currButton.padding = `${item.absoluteBoundingBox.height / designSystem.remUnit}rem`
             }
-            console.log('')
+            if (item.type === 'TEXT') {
+                currButton.textColor = item.fills[0].color
+            }
         })
+
+        designSystem[currButton.name] = currButton;
+
+        // if (button.name.indexOf(':hover') > -1) {
+        //     console.log(currButton.name);
+        // }
+
     })
 }
 
@@ -72,7 +89,7 @@ const getFonts = async(typeFrames) => {
             color = frame.name.substring(frame.name.indexOf(':') + 1, frame.name.length);
 
             if (element === 'body') {
-                designSystem.rem = frame.children[0].style.fontSize
+                designSystem.remUnit = frame.children[0].style.fontSize
             }
 
             await Promise.all(Object.keys(frame.children[0].style).map(async(item) => {
@@ -139,16 +156,16 @@ const generateClasses = async(designObj) => {
             if (designObj[frame].name === 'type') {
                 await getFonts(designObj[frame].children);
             }
-
-            // ?Gets the buttons
-            if (designObj[frame].name === 'buttons') {
-                getButtons(designObj[frame].children);
-            }
         }
     }))
 
     await Promise.all(Object.keys(designObj).map(async (frame) => {
         if (designObj[frame].type === 'FRAME') {
+            // ?Gets the buttons
+            if (designObj[frame].name === 'buttons') {
+                getButtons(designObj[frame].children);
+            }
+
             // ?Finds all the other div styling
             if (designObj[frame].name !== 'type' && designObj[frame].name !== 'colors' && designObj[frame].name !== 'buttons') {
                 const newObj = {
@@ -161,7 +178,7 @@ const generateClasses = async(designObj) => {
                 designObj[frame].children.forEach((item) => {
                     if (item.type === 'FRAME') {
                         if (name !== item.name) {
-                            newObj.style[item.name] = `${item.absoluteBoundingBox.height / designSystem.rem}rem`;
+                            newObj.style[item.name] = `${item.absoluteBoundingBox.height / designSystem.remUnit}rem`;
                         }
                         name = item.name;
                     }
@@ -181,5 +198,5 @@ const generateClasses = async(designObj) => {
 (async() => {
     const figmaObj = await figmaAPIRequest();
     await generateClasses(figmaObj.document.children[0].children[0].children);
-    // console.log(designSystem);
+    console.log(designSystem);
 })();

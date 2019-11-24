@@ -8,6 +8,7 @@ const designSystem = {
     classes: [],
     elements: [],
     colors: [],
+    buttons: [],
     rem: null,
 };
 
@@ -29,10 +30,31 @@ const options = {
     }
 }
 
+const getButtons = (buttonFrames) => {
+    buttonFrames.forEach((button) => {
+        const className = button.name;
+        
+        button.children.forEach((item) => {
+            if (item.type === 'RECTANGLE') {
+                console.log(item.fills);
+                console.log(item.strokes);
+                console.log(item.strokeWeight);
+                console.log(item.effects);
+                console.log(item.cornerRadius);
+            }
+            if (item.type === 'FRAME') {
+                console.log(item.name)
+                console.log(item.absoluteBoundingBox.height)
+            }
+            console.log('')
+        })
+    })
+}
+
 const getColors = (colorFrames) => {
     colorFrames.forEach((frame) => {
         designSystem.colors.push({
-           [`${frame.name}`]: frame.children[0].characters
+           [frame.name]: frame.children[0].characters
         })
     });
 }
@@ -117,16 +139,21 @@ const generateClasses = async(designObj) => {
             if (designObj[frame].name === 'type') {
                 await getFonts(designObj[frame].children);
             }
+
+            // ?Gets the buttons
+            if (designObj[frame].name === 'buttons') {
+                getButtons(designObj[frame].children);
+            }
         }
     }))
 
     await Promise.all(Object.keys(designObj).map(async (frame) => {
         if (designObj[frame].type === 'FRAME') {
             // ?Finds all the other div styling
-            if (designObj[frame].name !== 'type' && designObj[frame].name !== 'colors') {
+            if (designObj[frame].name !== 'type' && designObj[frame].name !== 'colors' && designObj[frame].name !== 'buttons') {
                 const newObj = {
                     name: '',
-                    style: []
+                    style: {}
                 }
                 newObj.name = `${designObj[frame].name}`;
                 let name = '';
@@ -134,21 +161,18 @@ const generateClasses = async(designObj) => {
                 designObj[frame].children.forEach((item) => {
                     if (item.type === 'FRAME') {
                         if (name !== item.name) {
-                            newObj.style.push({
-                                [`${item.name}`]: `${item.absoluteBoundingBox.height / designSystem.rem}rem`
-                            })
+                            newObj.style[item.name] = `${item.absoluteBoundingBox.height / designSystem.rem}rem`;
                         }
                         name = item.name;
                     }
                 })
 
                 // console.log(newObj);
-
-                designSystem.classes.push({
-                    [newObj.name]: {
-                        ...newObj.style
-                    }
-                });
+                if (newObj.name === 'ul') {
+                    designSystem.elements[newObj.name] = newObj.style;
+                } else {
+                    designSystem.classes[newObj.name] = newObj.style;
+                }
             }
         }
     }))
@@ -157,5 +181,5 @@ const generateClasses = async(designObj) => {
 (async() => {
     const figmaObj = await figmaAPIRequest();
     await generateClasses(figmaObj.document.children[0].children[0].children);
-    console.log(designSystem);
+    // console.log(designSystem);
 })();

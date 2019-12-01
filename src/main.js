@@ -1,6 +1,6 @@
 const FIGMA_API_URL = 'https://api.figma.com/v1';
 const GOOGLE_FONTS_API_URL = 'https://fonts.googleapis.com';
-const ACCESS_TOKEN = '26651-625efab7-5897-4196-a328-b1c88876d26d';
+const ACCESS_TOKEN = '';
 const fetch = require('node-fetch');
 
 const designSystem = {
